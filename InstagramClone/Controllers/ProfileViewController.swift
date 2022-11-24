@@ -8,10 +8,14 @@
 import UIKit
 import Firebase
 import FirebaseStorage
+import FirebaseCore
+import FirebaseFirestore
+
 
 
 class ProfileViewController: UIViewController {
 
+    @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var descriptionTextField: UITextField!
     @IBOutlet weak var image: UIImageView!
     override func viewDidLoad() {
@@ -19,10 +23,19 @@ class ProfileViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         
+        
         gestureTap()
         imageSettings()
     }
     
+    
+    
+    func makeAlert(title:String,message:String){
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okButton = UIAlertAction(title: "Ok", style: .default)
+        alert.addAction(okButton)
+        self.present(alert, animated: true)
+    }
     
     
     func imageSettings()
@@ -32,8 +45,6 @@ class ProfileViewController: UIViewController {
         image.layer.shadowOffset = CGSize(width: 4, height: 4)
         image.layer.shadowRadius = 10
         
-        
-
     }
 
     
@@ -55,6 +66,8 @@ class ProfileViewController: UIViewController {
         pickercontroller.sourceType = .photoLibrary
         pickercontroller.allowsEditing = false
         present(pickercontroller, animated: true)
+        
+        
         
     }
     
@@ -80,54 +93,49 @@ class ProfileViewController: UIViewController {
             imageReference.putData(data) { metaData, error in
                 
                 if error != nil {
-                    print(error?.localizedDescription)
+                    self.makeAlert(title: "Error", message: error?.localizedDescription ?? "error")
                 } else {
                     imageReference.downloadURL { url,error in
+                        
                         if error == nil {
                             let imageUrl = url?.absoluteString
-                            print(imageUrl)
+                            self.makeAlert(title: "Nice !", message: error?.localizedDescription ?? "Fotoğraf başarıyla yüklendi !")
+                            
+                            
+                            // MARK: - DataBase
+                            
+                            let fireStoreDatabase = Firestore.firestore()
+                            var firestoreReference : DocumentReference? = nil
+                            
+                            
+                            let fireStorePost = [
+                                "imageUrl":imageUrl!,
+                                "postedBy": Auth.auth().currentUser!.email!,
+                                "postComment":self.textView.text!,
+                                "date":FieldValue.serverTimestamp(),
+                                "likes":0]  as [String:Any]
+                            
+                            
+                            firestoreReference = fireStoreDatabase.collection("Posts").addDocument(data: fireStorePost,completion: { error in
+                                if error != nil {
+                                    self.makeAlert(title: "Error !", message: error?.localizedDescription ?? "Error kayıt geçersiz")
+                                } else {
+                                    self.image.image = UIImage(named: "color")
+                                    self.textView.text = ""
+                                    self.tabBarController?.selectedIndex = 0
+                                }
+                                
+                            })
+                    
                         }
                         
                     }
                 }
+                
             }
                 
-            
         }
-        
-        
-        
-   
-        
-        
-        
-        /*
-        let storage = Storage.storage()
-        let storageReference = storage.reference()
-        let mediaFolder = storageReference.child("media")
-        
-        if let data = image.image?.jpegData(compressionQuality:1) {
-            let imageRefence = mediaFolder.child("image.jpg")
-            
-            imageRefence.putData(data) { metaData, error in
-                
-                if error != nil
-                {
-                    print(error?.localizedDescription)
-                }
-                else {
-                    imageRefence.downloadURL { url, error in
-                        if error == nil {
-                            let imageUrl = url?.absoluteString
-                            print(imageUrl!)
-                        }
-                    }
-                }
-            }
-        }
-        
-        
-        */
+ 
     }
     
     
