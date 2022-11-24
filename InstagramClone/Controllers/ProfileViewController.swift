@@ -86,7 +86,7 @@ class ProfileViewController: UIViewController {
         let storageReference = storage.reference()
         let mediaFolder = storageReference.child("media")
         
-        if let data = image.image?.jpegData(compressionQuality: 1) {
+        if let data = image.image?.jpegData(compressionQuality: 0.3) {
             
             let uuıd = UUID().uuidString
             let imageReference = mediaFolder.child("\(uuıd).jpg")
@@ -120,7 +120,7 @@ class ProfileViewController: UIViewController {
                                 if error != nil {
                                     self.makeAlert(title: "Error !", message: error?.localizedDescription ?? "Error kayıt geçersiz")
                                 } else {
-                                    self.image.image = UIImage(named: "color")
+                                    self.image.image = UIImage(named: "instagram")
                                     self.textView.text = ""
                                     self.tabBarController?.selectedIndex = 0
                                 }

@@ -14,8 +14,8 @@ class LoginViewController: UIViewController {
     
     @IBOutlet weak var kullaniciAdiTextField: UITextField!
     @IBOutlet weak var sifreTextField: UITextField!
-    @IBOutlet weak var heart: UIImageView!
-    @IBOutlet weak var instagram: UIImageView!
+ 
+ 
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,11 +39,7 @@ class LoginViewController: UIViewController {
     
     func imageSettings()
     {
-        heart.layer.cornerRadius = 30
-        instagram.layer.cornerRadius = 30
-        instagram.layer.shadowColor = UIColor.black.cgColor
-        instagram.layer.shadowOffset = CGSize(width: 4, height: 4)
-        instagram.layer.shadowRadius = 10
+       
 
     }
 

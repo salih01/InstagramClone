@@ -7,6 +7,7 @@
 
 import UIKit
 import Firebase
+import SDWebImage
 
 class HomeViewController: UIViewController {
     
@@ -14,6 +15,7 @@ class HomeViewController: UIViewController {
     var userCommentArray = [String]()
     var likeArray = [Int]()
     var userImageArray = [String]()
+    var DocumentID = [String]()
 
     @IBOutlet weak var tableView: UITableView!
     
@@ -34,13 +36,20 @@ class HomeViewController: UIViewController {
         
         let fireStoreDatabase = Firestore.firestore()
         
-        fireStoreDatabase.collection("Posts").addSnapshotListener { querySnapshot, error in
+        fireStoreDatabase.collection("Posts").order(by: "date", descending: true).addSnapshotListener { querySnapshot, error in
             
             if error != nil {
                 print(error?.localizedDescription as Any)
                 
             } else {
                 if querySnapshot?.isEmpty != true {
+                    
+                    self.userImageArray.removeAll(keepingCapacity: false)
+                    self.userEmailArray.removeAll(keepingCapacity: false)
+                    self.userCommentArray.removeAll(keepingCapacity: false)
+                    self.likeArray.removeAll(keepingCapacity: false)
+
+
                     
                     for document in querySnapshot!.documents {
                         let documentID = document.documentID
@@ -73,7 +82,6 @@ class HomeViewController: UIViewController {
 }
 
 
-
 extension HomeViewController:UITableViewDelegate,UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return userEmailArray.count
@@ -86,7 +94,7 @@ extension HomeViewController:UITableViewDelegate,UITableViewDataSource {
         cell.userEmailLabel.text = userEmailArray[indexPath.row]
         cell.likeLabel.text = String(likeArray[indexPath.row])
         cell.commentLabel.text = userCommentArray[indexPath.row]
-        
+        cell.userImageView.sd_setImage(with: URL(string: self.userImageArray[indexPath.row]))
         
         return cell
         

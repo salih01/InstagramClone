@@ -38,6 +38,8 @@ class HomeViewCell: UITableViewCell {
     
     @IBAction func likeButtonClicked(_ sender: Any) {
         
+        print("tıklanıyor mu")
+        
         
     }
     
